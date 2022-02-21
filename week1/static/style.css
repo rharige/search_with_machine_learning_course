@@ -4,6 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 20px;
 }
 
 #did-you-mean {
@@ -20,7 +21,7 @@
 /* See https://css-tricks.com/snippets/css/complete-guide-grid/ for details on grid */
 #all-results {
     display: grid;
-    grid-template-columns: 200px 90%;
+    grid-template-columns: 265px 90%;
     grid-template-rows: 100px;
     grid-column-gap: 15px;
 }
@@ -83,7 +84,10 @@
 .search-result-header, .filter-header{
     font-weight: bold;
 }
-
+.debug{
+    font-family: monospace;
+    padding-bottom: 10px;
+}
 /*
 Debug
 */
@@ -113,3 +117,30 @@ Headers and footers
     align-items: center;
     justify-content: center;
 }
+
+input[type=search] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  input[type=submit] {
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid rgb(221, 54, 54);
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+ select {
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid rgb(47, 50, 235);
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
