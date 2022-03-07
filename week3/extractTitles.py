@@ -3,6 +3,10 @@ import random
 import xml.etree.ElementTree as ET
 import argparse
 from pathlib import Path
+import nltk
+import string
+import re
+import pandas as pd
 
 directory = r'/workspace/search_with_machine_learning_course/data/pruned_products'
 parser = argparse.ArgumentParser(description='Process some integers.')
@@ -25,9 +29,14 @@ if args.input:
 
 sample_rate = args.sample_rate
 
-def transform_training_data(name):
-    # IMPLEMENT
-    return name.replace('\n', ' ')
+def transform_training_data(product_name):
+    stopwords = nltk.corpus.stopwords.words('english')
+    text_new = "".join([i for i in product_name if i not in string.punctuation])
+    words = nltk.tokenize.word_tokenize(text_new)
+    words = [re.sub("[^0-9A-Za-z\s]", "" , word) for word in words]
+    clean_words = [i.lower() for i in words if i not in stopwords]
+    product_name = ' '.join(clean_words)
+    return product_name
 
 # Directory for product data
 
