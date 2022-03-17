@@ -9,6 +9,9 @@ from week4.opensearch import get_opensearch
 
 import week4.utilities.query_utils as qu
 import week4.utilities.ltr_utils as lu
+import string
+from nltk.tokenize import word_tokenize
+from nltk.stem import SnowballStemmer
 
 bp = Blueprint('search', __name__, url_prefix='/search')
 
@@ -56,9 +59,23 @@ def process_filters(filters_input):
 
     return filters, display_filters, applied_filters
 
-def get_query_category(user_query, query_class_model):
-    print("IMPLEMENT ME: get_query_category")
-    return None
+
+"""Convert queries to lowercase, and optionally implement other normalization, like stemming."""
+def normalize_query(query):
+    query_lower_clean = "".join([i for i in query.lower() if i not in string.punctuation])
+    query_lower_clean_tokens = word_tokenize(query_lower_clean)
+    sb = SnowballStemmer("english")
+    query_lower_clean_stem_tokens = [sb.stem(token) for token in query_lower_clean_tokens]
+    return (" ").join(query_lower_clean_stem_tokens)
+
+def get_query_category(user_query, query_class_model, confidence_threshold):
+    categories = []
+    predicted_cats, confidence = query_class_model.predict(normalize_query(user_query), 5)
+    for category, confidence in zip(predicted_cats, confidence):
+        if confidence > confidence_threshold:
+            categories.append(category.replace('__label__', ''))
+    return categories
+    
 
 
 @bp.route('/query', methods=['GET', 'POST'])
@@ -136,9 +153,10 @@ def query():
         query_obj = qu.create_query("*", "", [], sort, sortDir, size=100)
 
     query_class_model = current_app.config["query_model"]
-    query_category = get_query_category(user_query, query_class_model)
+    query_category = get_query_category(user_query, query_class_model, 0.5)
     if query_category is not None:
-        print("IMPLEMENT ME: add this into the filters object so that it gets applied at search time.  This should look like your `term` filter from week 1 for department but for categories instead")
+        print("got category: ", query_category)
+        qu.add_filter(query_obj, query_category)
     #print("query obj: {}".format(query_obj))
     response = opensearch.search(body=query_obj, index=current_app.config["index_name"], explain=explain)
     # Postprocess results here if you so desire
